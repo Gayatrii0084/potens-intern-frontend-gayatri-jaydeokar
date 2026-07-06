@@ -139,12 +139,12 @@ function ActionPanel({ lang = "en" }) {
     <section className="border border-gray-300 bg-white">
 
       {/* ── Panel header ── */}
-      <div className="border-b border-gray-300 p-4 flex items-center justify-between">
+      <div className="border-b border-gray-300 p-5 flex items-center justify-between">
         <div>
           <h2 className="font-bold text-slate-900 text-base leading-tight">
             {t.panelTitle}
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-1 text-sm text-slate-500">
             {t.panelSubtitle}
           </p>
         </div>
@@ -155,7 +155,7 @@ function ActionPanel({ lang = "en" }) {
 
       {/* ── Column headings ── */}
       {/* 200px action column ensures enough room for Marathi button texts without wrapping */}
-      <div className="hidden lg:grid grid-cols-[56px_1fr_108px_200px] gap-x-4 px-4 py-2 border-b border-gray-200 bg-stone-50">
+      <div className="hidden lg:grid grid-cols-[56px_1fr_108px_200px] gap-x-4 px-5 py-2 border-b border-gray-200 bg-stone-50">
         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t.cols.priority}</span>
         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t.cols.item}</span>
         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">{t.cols.status}</span>
@@ -174,7 +174,7 @@ function ActionPanel({ lang = "en" }) {
             <li
               key={item.id}
               className={[
-                "grid grid-cols-1 lg:grid-cols-[56px_1fr_108px_200px] gap-x-4 gap-y-2 px-4 py-3 items-center transition-colors",
+                "grid grid-cols-1 lg:grid-cols-[56px_1fr_108px_200px] gap-x-4 gap-y-3 px-5 py-4 items-center transition-colors",
                 item.status === "approved" ? "bg-green-50/50" : "",
                 item.status === "hold"     ? "bg-amber-50/50" : "",
               ].join(" ")}
@@ -191,13 +191,13 @@ function ActionPanel({ lang = "en" }) {
               {/* Title + context */}
               <div>
                 <p
-                  className={`text-sm font-semibold leading-snug ${
+                  className={`text-base font-semibold leading-snug ${
                     isActioned ? "text-slate-400" : "text-slate-800"
                   }`}
                 >
                   {itemText.title}
                 </p>
-                <p className="mt-0.5 text-xs text-slate-500 leading-snug">
+                <p className="mt-1 text-sm text-slate-500 leading-snug">
                   {itemText.context}
                 </p>
               </div>
@@ -205,7 +205,7 @@ function ActionPanel({ lang = "en" }) {
               {/* Status indicator */}
               <div className="flex lg:justify-center">
                 <span
-                  className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-sm ${statusStyle}`}
+                  className={`inline-flex items-center px-2 py-1 text-sm font-semibold rounded-sm ${statusStyle}`}
                 >
                   {t.statuses[item.status]}
                 </span>

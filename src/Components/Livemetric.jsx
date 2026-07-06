@@ -92,11 +92,11 @@ function LiveMetric({ lang = "en" }) {
   const t = STRINGS[lang] ?? STRINGS.en
 
   return (
-    <section className="border border-gray-300 bg-slate-900 text-white p-4 min-h-[192px] flex flex-col justify-between">
+    <section className="border border-gray-300 bg-slate-900 text-white p-5 min-h-[200px] flex flex-col justify-between">
 
       {/* ── Row 1: heading + live badge ── */}
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+        <p className="text-sm font-bold uppercase tracking-widest text-slate-400">
           {t.heading}
         </p>
 
@@ -106,7 +106,7 @@ function LiveMetric({ lang = "en" }) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
           </span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-green-400">
+          <span className="text-xs font-bold uppercase tracking-widest text-green-400">
             {t.live}
           </span>
         </span>
@@ -158,17 +158,17 @@ function LiveMetric({ lang = "en" }) {
       </div>
 
       {/* ── Row 3: urgency message ── */}
-      <p className={`mt-3 text-xs font-semibold ${URGENCY_COLOR[urgencyKey]}`}>
+      <p className={`mt-3 text-sm font-bold ${URGENCY_COLOR[urgencyKey]}`}>
         {t.urgency[urgencyKey]}
       </p>
 
       {/* ── Row 4: supporting line ── */}
-      <p className="mt-1 text-xs text-slate-400 leading-snug">
+      <p className="mt-1 text-sm text-slate-400 leading-snug">
         {t.support}
       </p>
 
       {/* ── Row 5: footer deadline anchor ── */}
-      <p className="mt-3 pt-3 border-t border-slate-700 text-xs font-semibold text-slate-300">
+      <p className="mt-3 pt-3 border-t border-slate-700 text-sm font-semibold text-slate-300">
         {t.footer}
       </p>
 

@@ -117,12 +117,12 @@ function AnomalyPanel({ lang = "en" }) {
     <section className="border border-gray-300 bg-white flex flex-col">
 
       {/* Panel header */}
-      <div className="border-b border-gray-300 p-4 flex items-center justify-between shrink-0">
+      <div className="border-b border-gray-300 p-5 flex items-center justify-between shrink-0">
         <div>
           <h2 className="font-bold text-slate-900 text-base leading-tight">
             {t.panelTitle}
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-1 text-sm text-slate-500">
             {t.panelSubtitle}
           </p>
         </div>
@@ -141,7 +141,7 @@ function AnomalyPanel({ lang = "en" }) {
           const cfg = SEVERITY_CONFIG[anomaly.severity]
           const anomalyText = t.items[anomaly.id]
           return (
-            <li key={anomaly.id} className="flex gap-3 px-4 py-3">
+            <li key={anomaly.id} className="flex gap-3 px-5 py-4">
 
               {/* Left accent bar — provides a quick severity scan path */}
               <div className={`shrink-0 w-1 self-stretch rounded-full ${cfg.bar}`} aria-hidden="true" />
@@ -149,20 +149,20 @@ function AnomalyPanel({ lang = "en" }) {
               {/* Content */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm font-semibold text-slate-800 leading-snug">
+                  <p className="text-base font-semibold text-slate-800 leading-snug">
                     {anomalyText.title}
                   </p>
                   {/* Severity badge */}
                   <span
-                    className={`shrink-0 inline-flex items-center px-2 py-0.5 text-[10px] tracking-wide uppercase rounded-sm ${cfg.badge}`}
+                    className={`shrink-0 inline-flex items-center px-2 py-0.5 text-[11px] tracking-wide uppercase rounded-sm ${cfg.badge}`}
                   >
                     {t.severities[anomaly.severity]}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-slate-500 leading-snug">
+                <p className="mt-1 text-sm text-slate-500 leading-snug">
                   {anomalyText.explanation}
                 </p>
-                <p className="mt-1.5 text-[10px] font-medium text-slate-400 tracking-wide uppercase">
+                <p className="mt-1.5 text-xs font-medium text-slate-400 tracking-wide uppercase">
                   {t.detectedPrefix}{anomalyText.detectedAt}
                 </p>
               </div>

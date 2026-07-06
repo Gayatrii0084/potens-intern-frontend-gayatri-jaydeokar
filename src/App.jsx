@@ -75,8 +75,8 @@ function App() {
       <Header lang={lang} onLanguageChange={setLang} />
 
       {/* Dashboard container — centered, max-width capped for desktop readability */}
-      {/* consistent 20px (px-5 py-5) page padding and 24px (gap-6) vertical spacing */}
-      <main className="mx-auto w-[94%] max-w-[1600px] px-5 py-5 flex flex-col gap-6">
+      {/* consistent 20px (px-5) page padding and 32px (py-8) top/bottom margins */}
+      <main className="mx-auto w-[94%] max-w-[1600px] px-5 py-8 flex flex-col gap-6">
 
         {/*
           Two-column grid:
@@ -93,27 +93,27 @@ function App() {
 
             {/* Escalation Contacts Panel */}
             <section className="border border-gray-300 bg-white">
-              {/* Header & Subtitle (16px / p-4 internal card padding) */}
-              <div className="border-b border-gray-300 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                <h3 className="font-bold text-[#1B2A41] text-xs tracking-wider uppercase">
+              {/* Header & Subtitle (20px / p-5 internal card padding for balance) */}
+              <div className="border-b border-gray-300 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <h3 className="font-bold text-[#1B2A41] text-sm tracking-wider uppercase">
                   {e.sectionTitle}
                 </h3>
-                <p className="text-[10px] font-medium text-[#5C6470]">
+                <p className="text-xs font-medium text-[#5C6470]">
                   {e.disclaimer}
                 </p>
               </div>
 
-              {/* Contacts Row: 3 equal horizontal columns on desktop */}
+              {/* Contacts Row: 3 equal horizontal columns on desktop with p-5 padding */}
               <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#D9D6CE]">
                 {e.contacts.map((contact, idx) => {
                   const isAvailable = contact.statusType === "available";
                   return (
-                    <div key={idx} className="p-4 flex items-center justify-between gap-4">
+                    <div key={idx} className="p-5 flex items-center justify-between gap-4">
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-[#1B2A41] truncate">
+                        <p className="text-base font-bold text-[#1B2A41] truncate leading-tight">
                           {contact.role}
                         </p>
-                        <p className="mt-0.5 text-xs text-[#5C6470] truncate">
+                        <p className="mt-1 text-sm text-[#5C6470] truncate">
                           {contact.desc}
                         </p>
                       </div>
@@ -122,7 +122,7 @@ function App() {
                         <span className="text-xs font-mono font-medium text-[#1B2A41] bg-stone-100 px-2 py-0.5 border border-gray-200 rounded-sm">
                           {contact.ext}
                         </span>
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-sm ${
+                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-sm ${
                           isAvailable 
                             ? "bg-green-50 text-green-700 border border-green-200" 
                             : "bg-blue-50 text-blue-700 border border-blue-200"
