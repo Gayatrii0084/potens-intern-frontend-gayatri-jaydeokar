@@ -203,10 +203,10 @@ function ActionPanel({ lang = "en" }) {
       {/* ── Column headings ── */}
       {/* 200px action column ensures enough room for Marathi button texts without wrapping */}
       <div className="hidden md:grid grid-cols-[56px_1fr_108px_200px] gap-x-4 px-5 py-2 border-b border-gray-200 bg-stone-50">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t.cols.priority}</span>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t.cols.item}</span>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">{t.cols.status}</span>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">{t.cols.actions}</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">{t.cols.priority}</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">{t.cols.item}</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 text-center">{t.cols.status}</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 text-right">{t.cols.actions}</span>
       </div>
 
       {/* ── Item rows ── */}
@@ -221,8 +221,17 @@ function ActionPanel({ lang = "en" }) {
             <li
               key={item.id}
               onClick={() => setSelectedIndex(idx)}
+              tabIndex={0}
+              role="button"
+              aria-selected={selectedIndex === idx}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault()
+                  setSelectedIndex(idx)
+                }
+              }}
               className={[
-                "grid grid-cols-1 md:grid-cols-[56px_1fr_108px_200px] gap-x-4 gap-y-3 px-5 py-4 items-center transition-colors cursor-pointer select-none",
+                "grid grid-cols-1 md:grid-cols-[56px_1fr_108px_200px] gap-x-4 gap-y-3 px-5 py-4 items-center transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-900",
                 item.status === "approved" ? "bg-green-50/50" : "",
                 item.status === "hold"     ? "bg-amber-50/50" : "",
                 selectedIndex === idx
@@ -248,7 +257,7 @@ function ActionPanel({ lang = "en" }) {
                 >
                   {itemText.title}
                 </p>
-                <p className="mt-1 text-sm text-slate-500 leading-snug">
+                <p className="mt-1 text-sm text-slate-600 leading-snug">
                   {itemText.context}
                 </p>
               </div>
@@ -272,7 +281,7 @@ function ActionPanel({ lang = "en" }) {
                     setStatus(item.id, "approved")
                   }}
                   className={[
-                    "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors",
+                    "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-green-700",
                     isActioned
                       ? "border-gray-200 text-gray-300 bg-white cursor-not-allowed"
                       : "border-green-700 text-green-700 bg-white hover:bg-green-700 hover:text-white",
@@ -288,7 +297,7 @@ function ActionPanel({ lang = "en" }) {
                     setStatus(item.id, "hold")
                   }}
                   className={[
-                    "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors",
+                    "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-amber-500",
                     isActioned
                       ? "border-gray-200 text-gray-300 bg-white cursor-not-allowed"
                       : "border-amber-500 text-amber-700 bg-white hover:bg-amber-500 hover:text-white",

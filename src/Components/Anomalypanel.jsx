@@ -159,10 +159,10 @@ function AnomalyPanel({ lang = "en" }) {
                     {t.severities[anomaly.severity]}
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-slate-500 leading-snug">
+                <p className="mt-1 text-sm text-slate-600 leading-snug">
                   {anomalyText.explanation}
                 </p>
-                <p className="mt-1.5 text-xs font-medium text-slate-400 tracking-wide uppercase">
+                <p className="mt-1.5 text-xs font-medium text-slate-500 tracking-wide uppercase">
                   {t.detectedPrefix}{anomalyText.detectedAt}
                 </p>
               </div>
