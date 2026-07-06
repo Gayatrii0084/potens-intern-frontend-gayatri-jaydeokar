@@ -92,7 +92,7 @@ function LiveMetric({ lang = "en" }) {
   const t = STRINGS[lang] ?? STRINGS.en
 
   return (
-    <section className="border border-gray-300 bg-slate-900 text-white px-6 py-5">
+    <section className="border border-gray-300 bg-slate-900 text-white p-4 min-h-[192px] flex flex-col justify-between">
 
       {/* ── Row 1: heading + live badge ── */}
       <div className="flex items-center justify-between gap-3">

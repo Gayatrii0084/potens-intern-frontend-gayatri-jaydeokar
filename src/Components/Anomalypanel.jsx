@@ -117,7 +117,7 @@ function AnomalyPanel({ lang = "en" }) {
     <section className="border border-gray-300 bg-white flex flex-col">
 
       {/* Panel header */}
-      <div className="border-b border-gray-300 px-5 py-4 flex items-center justify-between shrink-0">
+      <div className="border-b border-gray-300 p-4 flex items-center justify-between shrink-0">
         <div>
           <h2 className="font-bold text-slate-900 text-base leading-tight">
             {t.panelTitle}
@@ -141,7 +141,7 @@ function AnomalyPanel({ lang = "en" }) {
           const cfg = SEVERITY_CONFIG[anomaly.severity]
           const anomalyText = t.items[anomaly.id]
           return (
-            <li key={anomaly.id} className="flex gap-3 px-5 py-3.5">
+            <li key={anomaly.id} className="flex gap-3 px-4 py-3">
 
               {/* Left accent bar — provides a quick severity scan path */}
               <div className={`shrink-0 w-1 self-stretch rounded-full ${cfg.bar}`} aria-hidden="true" />
