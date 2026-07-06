@@ -202,7 +202,7 @@ function ActionPanel({ lang = "en" }) {
 
       {/* ── Column headings ── */}
       {/* 200px action column ensures enough room for Marathi button texts without wrapping */}
-      <div className="hidden lg:grid grid-cols-[56px_1fr_108px_200px] gap-x-4 px-5 py-2 border-b border-gray-200 bg-stone-50">
+      <div className="hidden md:grid grid-cols-[56px_1fr_108px_200px] gap-x-4 px-5 py-2 border-b border-gray-200 bg-stone-50">
         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t.cols.priority}</span>
         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t.cols.item}</span>
         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">{t.cols.status}</span>
@@ -222,7 +222,7 @@ function ActionPanel({ lang = "en" }) {
               key={item.id}
               onClick={() => setSelectedIndex(idx)}
               className={[
-                "grid grid-cols-1 lg:grid-cols-[56px_1fr_108px_200px] gap-x-4 gap-y-3 px-5 py-4 items-center transition-colors cursor-pointer select-none",
+                "grid grid-cols-1 md:grid-cols-[56px_1fr_108px_200px] gap-x-4 gap-y-3 px-5 py-4 items-center transition-colors cursor-pointer select-none",
                 item.status === "approved" ? "bg-green-50/50" : "",
                 item.status === "hold"     ? "bg-amber-50/50" : "",
                 selectedIndex === idx
@@ -231,7 +231,7 @@ function ActionPanel({ lang = "en" }) {
               ].join(" ")}
             >
               {/* Priority badge */}
-              <div className="flex lg:block">
+              <div className="flex md:block">
                 <span
                   className={`inline-flex items-center justify-center w-11 h-6 text-[10px] font-bold tracking-wide rounded-sm ${priStyle}`}
                 >
