@@ -6,12 +6,12 @@ import LiveMetric from "./Components/Livemetric"
 
 function App() {
   // Language state lives here so it can be passed to any component that needs it.
-  // Header fires onLanguageChange; LiveMetric reads lang.
+  // Header fires onLanguageChange; all panels read the lang prop.
   const [lang, setLang] = useState("en")
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <Header onLanguageChange={setLang} />
+      <Header lang={lang} onLanguageChange={setLang} />
 
       {/* Dashboard container — centered, max-width capped for desktop readability */}
       <main className="mx-auto max-w-screen-xl px-6 py-6">
@@ -26,13 +26,13 @@ function App() {
 
           {/* Left: main action panel */}
           <div className="lg:col-span-2">
-            <ActionPanel />
+            <ActionPanel lang={lang} />
           </div>
 
           {/* Right: live metric on top, anomaly list below */}
           <div className="flex flex-col gap-5">
             <LiveMetric lang={lang} />
-            <AnomalyPanel />
+            <AnomalyPanel lang={lang} />
           </div>
 
         </div>

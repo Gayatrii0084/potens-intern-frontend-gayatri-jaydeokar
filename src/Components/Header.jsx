@@ -1,17 +1,29 @@
-import { useState } from "react"
-
-// Supported UI languages. Add entries here as translations are built out.
 const LANGUAGES = [
   { code: "en", label: "English" },
   { code: "mr", label: "मराठी" },
 ]
 
+// ── Translation dictionary for Header ────────────────────────────────────────
+const STRINGS = {
+  en: {
+    title: "Operations Cockpit",
+    subtitle: "Morning Operations Overview",
+    today: "Today",
+  },
+  mr: {
+    title: "ऑपरेशन्स कॉकपिट",
+    subtitle: "सकाळच्या कामकाजाचा आढावा",
+    today: "आज",
+  },
+}
+
 /**
- * Formats a Date object for the operations dashboard context.
- * Example: "Sunday, 6 July 2026"
+ * Formats a Date object for the operations dashboard context based on active language.
+ * Example (EN): "Sunday, 6 July 2026"
+ * Example (MR): "रविवार, ६ जुलै २०२६"
  */
-function formatTodayDate(date) {
-  return date.toLocaleDateString("en-IN", {
+function formatTodayDate(date, lang) {
+  return date.toLocaleDateString(lang === "mr" ? "mr-IN" : "en-IN", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -23,18 +35,12 @@ function formatTodayDate(date) {
  * Header — compact enterprise operations bar.
  *
  * Props:
- *   onLanguageChange(code: string) — optional callback fired when the
- *   user switches language. Connect from App.jsx when the translation
- *   system is ready. The toggle works stand-alone without it.
+ *   lang: "en" | "mr" — current active language
+ *   onLanguageChange(code: string) — callback fired when switching language.
  */
-function Header({ onLanguageChange }) {
-  const [activeLang, setActiveLang] = useState("en")
-  const todayLabel = formatTodayDate(new Date())
-
-  function handleLangSwitch(code) {
-    setActiveLang(code)
-    if (onLanguageChange) onLanguageChange(code)
-  }
+function Header({ lang = "en", onLanguageChange }) {
+  const todayLabel = formatTodayDate(new Date(), lang)
+  const t = STRINGS[lang] ?? STRINGS.en
 
   return (
     <header className="border-b border-gray-300 bg-white">
@@ -43,10 +49,10 @@ function Header({ onLanguageChange }) {
         {/* ── Left: product identity ── */}
         <div>
           <h1 className="text-lg font-bold tracking-tight text-slate-900 leading-snug">
-            Operations Cockpit
+            {t.title}
           </h1>
           <p className="mt-0.5 text-sm text-slate-500 font-normal">
-            Morning Operations Overview
+            {t.subtitle}
           </p>
         </div>
 
@@ -56,7 +62,7 @@ function Header({ onLanguageChange }) {
           {/* Current date — hidden on small screens to avoid overflow */}
           <div className="hidden sm:block text-right">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
-              Today
+              {t.today}
             </p>
             <p className="mt-0.5 text-sm font-semibold text-slate-700">
               {todayLabel}
@@ -76,11 +82,11 @@ function Header({ onLanguageChange }) {
               <button
                 key={code}
                 type="button"
-                onClick={() => handleLangSwitch(code)}
-                aria-pressed={activeLang === code}
+                onClick={() => onLanguageChange && onLanguageChange(code)}
+                aria-pressed={lang === code}
                 className={[
                   "px-3.5 py-1.5 text-sm font-semibold leading-none transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-slate-700",
-                  activeLang === code
+                  lang === code
                     ? "bg-slate-900 text-white"
                     : "bg-white text-slate-600 hover:bg-stone-50 hover:text-slate-900",
                 ].join(" ")}
@@ -97,3 +103,4 @@ function Header({ onLanguageChange }) {
 }
 
 export default Header
+
