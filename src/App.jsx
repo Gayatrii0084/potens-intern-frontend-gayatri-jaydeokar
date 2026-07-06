@@ -1,12 +1,17 @@
+import { useState } from "react"
 import Header from "./Components/Header"
 import ActionPanel from "./Components/ActionPanel"
 import AnomalyPanel from "./Components/Anomalypanel"
 import LiveMetric from "./Components/Livemetric"
 
 function App() {
+  // Language state lives here so it can be passed to any component that needs it.
+  // Header fires onLanguageChange; LiveMetric reads lang.
+  const [lang, setLang] = useState("en")
+
   return (
     <div className="min-h-screen bg-stone-50">
-      <Header />
+      <Header onLanguageChange={setLang} />
 
       {/* Dashboard container — centered, max-width capped for desktop readability */}
       <main className="mx-auto max-w-screen-xl px-6 py-6">
@@ -26,7 +31,7 @@ function App() {
 
           {/* Right: live metric on top, anomaly list below */}
           <div className="flex flex-col gap-5">
-            <LiveMetric />
+            <LiveMetric lang={lang} />
             <AnomalyPanel />
           </div>
 
