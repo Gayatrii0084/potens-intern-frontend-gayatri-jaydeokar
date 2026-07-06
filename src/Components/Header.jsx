@@ -44,7 +44,7 @@ function Header({ lang = "en", onLanguageChange }) {
 
   return (
     <header className="border-b border-gray-300 bg-white">
-      <div className="mx-auto max-w-screen-xl px-6 py-4 flex items-center justify-between gap-6">
+      <div className="mx-auto max-w-[1440px] px-5 py-4 flex items-center justify-between gap-6">
 
         {/* ── Left: product identity ── */}
         <div>

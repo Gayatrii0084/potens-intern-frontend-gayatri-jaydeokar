@@ -76,16 +76,16 @@ function App() {
 
       {/* Dashboard container — centered, max-width capped for desktop readability */}
       {/* consistent 20px (px-5 py-5) page padding and 24px (gap-6) vertical spacing */}
-      <main className="mx-auto max-w-screen-xl px-5 py-5 flex flex-col gap-6">
+      <main className="mx-auto max-w-[1440px] px-5 py-5 flex flex-col gap-6">
 
         {/*
           Two-column grid:
-            left  — ActionPanel (exactly 68% width on desktop)
-            right — LiveMetric + AnomalyPanel + EscalationContacts stacked in sidebar (32% width)
+            left  — ActionPanel (exactly 70% width on desktop)
+            right — LiveMetric + AnomalyPanel + EscalationContacts stacked in sidebar (30% width)
           On tablet/mobile (<lg) the columns stack naturally.
           Uses 24px (gap-6) spacing between major panels.
         */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[68%_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[70%_minmax(0,1fr)]">
 
           {/* Left: main action panel */}
           <div>
