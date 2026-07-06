@@ -71,12 +71,12 @@ function App() {
   const e = ESCALATION_STRINGS[lang] ?? ESCALATION_STRINGS.en
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="bg-transparent pb-10">
       <Header lang={lang} onLanguageChange={setLang} />
 
       {/* Dashboard container — centered, max-width capped for desktop readability */}
       {/* consistent 20px (px-5 py-5) page padding and 24px (gap-6) vertical spacing */}
-      <main className="mx-auto max-w-[1440px] px-5 py-5 flex flex-col gap-6">
+      <main className="mx-auto w-[94%] max-w-[1600px] px-5 py-5 flex flex-col gap-6">
 
         {/*
           Two-column grid:
