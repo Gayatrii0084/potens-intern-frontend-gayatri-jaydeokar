@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 // ── Priority styling config ──────────────────────────────────────────────────
 const PRIORITY_STYLE = {
@@ -20,6 +20,7 @@ const TRANSLATIONS = {
     panelTitle: "Today's Action Items",
     panelSubtitle: "Top 5 items requiring your decision this morning",
     pendingCountSuffix: "pending",
+    shortcutHint: "Keyboard: J/K to select | A to approve | H to hold",
     cols: {
       priority: "Priority",
       item: "Item",
@@ -67,6 +68,7 @@ const TRANSLATIONS = {
     panelTitle: "आज करावयाची कामे",
     panelSubtitle: "सकाळच्या वेळेत निर्णय घेणे आवश्यक असणाऱ्या ५ महत्त्वाच्या बाबी",
     pendingCountSuffix: "प्रलंबित",
+    shortcutHint: "कीबोर्ड: J/K निवडण्यासाठी | A मंजुरीसाठी | H थांबवण्यासाठी",
     cols: {
       priority: "प्राधान्य",
       item: "काम",
@@ -125,12 +127,52 @@ function ActionPanel({ lang = "en" }) {
   const [items, setItems] = useState(
     INITIAL_ITEMS.map((item) => ({ ...item, status: "pending" }))
   )
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
   function setStatus(id, newStatus) {
     setItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status: newStatus } : item))
     )
   }
+
+  // Keyboard shortcut listener
+  useEffect(() => {
+    function handleKeyDown(event) {
+      // Guard: do not trigger if focus is on inputs, textareas, or editable elements
+      const target = event.target
+      const isInput = 
+        target.tagName === "INPUT" || 
+        target.tagName === "TEXTAREA" || 
+        target.isContentEditable
+
+      if (isInput) return
+
+      const key = event.key.toLowerCase()
+
+      if (key === "j") {
+        event.preventDefault()
+        setSelectedIndex((prev) => (prev + 1) % items.length)
+      } else if (key === "k") {
+        event.preventDefault()
+        setSelectedIndex((prev) => (prev - 1 + items.length) % items.length)
+      } else if (key === "a") {
+        event.preventDefault()
+        const selectedItem = items[selectedIndex]
+        if (selectedItem && selectedItem.status === "pending") {
+          setStatus(selectedItem.id, "approved")
+        }
+      } else if (key === "h") {
+        event.preventDefault()
+        const selectedItem = items[selectedIndex]
+        if (selectedItem && selectedItem.status === "pending") {
+          setStatus(selectedItem.id, "hold")
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [items, selectedIndex])
 
   const pendingCount = items.filter((i) => i.status === "pending").length
   const t = TRANSLATIONS[lang] ?? TRANSLATIONS.en
@@ -139,7 +181,7 @@ function ActionPanel({ lang = "en" }) {
     <section className="border border-gray-300 bg-white">
 
       {/* ── Panel header ── */}
-      <div className="border-b border-gray-300 p-5 flex items-center justify-between">
+      <div className="border-b border-gray-300 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="font-bold text-slate-900 text-base leading-tight">
             {t.panelTitle}
@@ -148,9 +190,14 @@ function ActionPanel({ lang = "en" }) {
             {t.panelSubtitle}
           </p>
         </div>
-        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider tabular-nums">
-          {pendingCount} / {items.length} {t.pendingCountSuffix}
-        </span>
+        <div className="flex flex-col items-end gap-1.5 shrink-0">
+          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider tabular-nums">
+            {pendingCount} / {items.length} {t.pendingCountSuffix}
+          </span>
+          <span className="text-[11px] font-medium text-slate-500 bg-stone-100 px-2 py-0.5 border border-gray-200 rounded-sm">
+            {t.shortcutHint}
+          </span>
+        </div>
       </div>
 
       {/* ── Column headings ── */}
@@ -164,7 +211,7 @@ function ActionPanel({ lang = "en" }) {
 
       {/* ── Item rows ── */}
       <ul className="divide-y divide-gray-200">
-        {items.map((item) => {
+        {items.map((item, idx) => {
           const isActioned = item.status !== "pending"
           const priStyle = PRIORITY_STYLE[item.priority]
           const statusStyle = STATUS_STYLE[item.status]
@@ -173,10 +220,14 @@ function ActionPanel({ lang = "en" }) {
           return (
             <li
               key={item.id}
+              onClick={() => setSelectedIndex(idx)}
               className={[
-                "grid grid-cols-1 lg:grid-cols-[56px_1fr_108px_200px] gap-x-4 gap-y-3 px-5 py-4 items-center transition-colors",
+                "grid grid-cols-1 lg:grid-cols-[56px_1fr_108px_200px] gap-x-4 gap-y-3 px-5 py-4 items-center transition-colors cursor-pointer select-none",
                 item.status === "approved" ? "bg-green-50/50" : "",
                 item.status === "hold"     ? "bg-amber-50/50" : "",
+                selectedIndex === idx
+                  ? "relative ring-2 ring-inset ring-slate-900 bg-stone-50/40 z-10"
+                  : "hover:bg-stone-50/20",
               ].join(" ")}
             >
               {/* Priority badge */}
@@ -216,7 +267,10 @@ function ActionPanel({ lang = "en" }) {
                 <button
                   type="button"
                   disabled={isActioned}
-                  onClick={() => setStatus(item.id, "approved")}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setStatus(item.id, "approved")
+                  }}
                   className={[
                     "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors",
                     isActioned
@@ -229,7 +283,10 @@ function ActionPanel({ lang = "en" }) {
                 <button
                   type="button"
                   disabled={isActioned}
-                  onClick={() => setStatus(item.id, "hold")}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setStatus(item.id, "hold")
+                  }}
                   className={[
                     "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors",
                     isActioned
