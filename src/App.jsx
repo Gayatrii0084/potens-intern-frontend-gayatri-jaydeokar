@@ -1,5 +1,6 @@
 import { useState } from "react"
 import Header from "./Components/Header"
+import LoginPage from "./Components/LoginPage"
 import ActionPanel from "./Components/ActionPanel"
 import AnomalyPanel from "./Components/Anomalypanel"
 import LiveMetric from "./Components/Livemetric"
@@ -7,8 +8,8 @@ import { DEPARTMENTS } from "./mockData"
 
 function App() {
   const [lang, setLang] = useState("en")
+  const [userDepartment, setUserDepartment] = useState(null)
   const [activeDepartment, setActiveDepartment] = useState("medical")
-  const userDepartment = "medical"
 
   // Lift action items state to App.jsx to preserve status across department switches
   const [departmentItems, setDepartmentItems] = useState(() => {
@@ -32,6 +33,25 @@ function App() {
     }))
   }
 
+  const handleLogin = (departmentId) => {
+    setUserDepartment(departmentId)
+    setActiveDepartment(departmentId)
+  }
+
+  const handleSignOut = () => {
+    setUserDepartment(null)
+  }
+
+  if (!userDepartment) {
+    return (
+      <LoginPage
+        lang={lang}
+        onLanguageChange={setLang}
+        onLogin={handleLogin}
+      />
+    )
+  }
+
   // Escalation contacts mapping
   const contactsSectionTitle = lang === "mr" ? "तातडीच्या मदतीसाठी संपर्क" : "Escalation Contacts"
   const contactsDisclaimer = lang === "mr"
@@ -52,7 +72,7 @@ function App() {
 
   return (
     <div className="bg-transparent pb-10">
-      <Header lang={lang} onLanguageChange={setLang} />
+      <Header lang={lang} onLanguageChange={setLang} onSignOut={handleSignOut} />
 
       {/* Dashboard container — centered, max-width capped for desktop readability */}
       <main className="mx-auto w-[94%] max-w-[1600px] px-5 py-8 flex flex-col gap-6">

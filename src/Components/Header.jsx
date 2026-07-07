@@ -9,11 +9,13 @@ const STRINGS = {
     title: "Operations Cockpit",
     subtitle: "Morning Operations Overview",
     today: "Today",
+    signOut: "Sign out",
   },
   mr: {
     title: "ऑपरेशन्स कॉकपिट",
     subtitle: "सकाळच्या कामकाजाचा आढावा",
     today: "आज",
+    signOut: "बाहेर पडा",
   },
 }
 
@@ -37,8 +39,9 @@ function formatTodayDate(date, lang) {
  * Props:
  *   lang: "en" | "mr" — current active language
  *   onLanguageChange(code: string) — callback fired when switching language.
+ *   onSignOut() — callback fired when signing out.
  */
-function Header({ lang = "en", onLanguageChange }) {
+function Header({ lang = "en", onLanguageChange, onSignOut }) {
   const todayLabel = formatTodayDate(new Date(), lang)
   const t = STRINGS[lang] ?? STRINGS.en
 
@@ -95,6 +98,20 @@ function Header({ lang = "en", onLanguageChange }) {
               </button>
             ))}
           </div>
+
+          {/* Sign out */}
+          {onSignOut && (
+            <>
+              <div className="hidden sm:block h-8 w-px bg-gray-200" aria-hidden="true" />
+              <button
+                type="button"
+                onClick={onSignOut}
+                className="px-4 py-2 text-sm font-semibold border border-gray-300 text-slate-700 bg-white hover:bg-stone-50 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-slate-700"
+              >
+                {t.signOut}
+              </button>
+            </>
+          )}
 
         </div>
       </div>
