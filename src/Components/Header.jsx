@@ -3,27 +3,23 @@ const LANGUAGES = [
   { code: "mr", label: "मराठी" },
 ]
 
-// ── Translation dictionary for Header ────────────────────────────────────────
 const STRINGS = {
   en: {
     title: "Operations Cockpit",
     subtitle: "Morning Operations Overview",
     today: "Today",
     signOut: "Sign out",
+    seniorLabel: "Senior Area Operator",
   },
   mr: {
     title: "ऑपरेशन्स कॉकपिट",
     subtitle: "सकाळच्या कामकाजाचा आढावा",
     today: "आज",
     signOut: "बाहेर पडा",
+    seniorLabel: "वरिष्ठ परिसर ऑपरेटर",
   },
 }
 
-/**
- * Formats a Date object for the operations dashboard context based on active language.
- * Example (EN): "Sunday, 6 July 2026"
- * Example (MR): "रविवार, ६ जुलै २०२६"
- */
 function formatTodayDate(date, lang) {
   return date.toLocaleDateString(lang === "mr" ? "mr-IN" : "en-IN", {
     weekday: "long",
@@ -33,15 +29,14 @@ function formatTodayDate(date, lang) {
   })
 }
 
-/**
- * Header — compact enterprise operations bar.
- *
- * Props:
- *   lang: "en" | "mr" — current active language
- *   onLanguageChange(code: string) — callback fired when switching language.
- *   onSignOut() — callback fired when signing out.
- */
-function Header({ lang = "en", onLanguageChange, onSignOut }) {
+function Header({
+  lang = "en",
+  onLanguageChange,
+  onSignOut,
+  operatorName,
+  departmentLabel,
+  areaLabel,
+}) {
   const todayLabel = formatTodayDate(new Date(), lang)
   const t = STRINGS[lang] ?? STRINGS.en
 
@@ -49,20 +44,33 @@ function Header({ lang = "en", onLanguageChange, onSignOut }) {
     <header className="border-b border-gray-300 bg-white">
       <div className="mx-auto w-[94%] max-w-[1600px] px-5 py-4 flex flex-wrap items-center justify-between gap-4 sm:gap-6">
 
-        {/* ── Left: product identity ── */}
-        <div>
+        {/* ── Left: product identity + operator info ── */}
+        <div className="min-w-0">
           <h1 className="text-lg font-bold tracking-tight text-slate-900 leading-snug">
             {t.title}
           </h1>
-          <p className="mt-0.5 text-sm text-slate-500 font-normal">
-            {t.subtitle}
-          </p>
+          {operatorName ? (
+            <div className="mt-1.5">
+              <p className="text-base font-bold text-[#1B2A41] leading-snug">
+                {operatorName}
+              </p>
+              <p className="mt-0.5 text-sm text-[#5C6470] leading-snug">
+                {departmentLabel} · {areaLabel}
+              </p>
+              <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                {t.seniorLabel}
+              </p>
+            </div>
+          ) : (
+            <p className="mt-0.5 text-sm text-slate-500 font-normal">
+              {t.subtitle}
+            </p>
+          )}
         </div>
 
-        {/* ── Right: date + language toggle ── */}
+        {/* ── Right: date + language toggle + sign out ── */}
         <div className="flex items-center gap-5 shrink-0">
 
-          {/* Current date — hidden on small screens to avoid overflow */}
           <div className="hidden sm:block text-right">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
               {t.today}
@@ -72,10 +80,8 @@ function Header({ lang = "en", onLanguageChange, onSignOut }) {
             </p>
           </div>
 
-          {/* Vertical rule */}
           <div className="hidden sm:block h-8 w-px bg-gray-200" aria-hidden="true" />
 
-          {/* Language toggle — segmented button pair */}
           <div
             role="group"
             aria-label="Select language"
@@ -99,7 +105,6 @@ function Header({ lang = "en", onLanguageChange, onSignOut }) {
             ))}
           </div>
 
-          {/* Sign out */}
           {onSignOut && (
             <>
               <div className="hidden sm:block h-8 w-px bg-gray-200" aria-hidden="true" />
@@ -120,4 +125,3 @@ function Header({ lang = "en", onLanguageChange, onSignOut }) {
 }
 
 export default Header
-

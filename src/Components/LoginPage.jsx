@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { DEPARTMENTS } from "../mockData"
+import { DEPARTMENTS, PUNE_AREAS } from "../mockData"
 import { DEPARTMENT_ACCESS_CODES } from "../accessCodes"
 
 const LANGUAGES = [
@@ -11,14 +11,20 @@ const STRINGS = {
   en: {
     title: "Operations Cockpit",
     subtitle: "Department Access",
-    instruction: "Select your department and enter its access code",
+    instruction: "Enter your details to access the Pune operations cockpit",
+    operatorNameLabel: "Operator Name",
     departmentLabel: "Department",
+    areaLabel: "Assigned Pune Area",
     accessCodeLabel: "Access Code",
     show: "Show",
     hide: "Hide",
     continue: "Continue to Cockpit",
+    selectArea: "Select your assigned area",
     errors: {
+      noOperatorName: "Please enter your operator name.",
+      operatorNameShort: "Operator name must be at least 2 characters.",
       noDepartment: "Please select your department.",
+      noArea: "Please select your assigned Pune area.",
       noCode: "Please enter the department access code.",
       mismatch: "The access code does not match the selected department. Please check and try again.",
     },
@@ -26,25 +32,39 @@ const STRINGS = {
   mr: {
     title: "ऑपरेशन्स कॉकपिट",
     subtitle: "विभाग प्रवेश",
-    instruction: "तुमचा विभाग निवडा आणि त्याचा प्रवेश कोड टाका",
+    instruction: "पुणे ऑपरेशन्स कॉकपिटमध्ये प्रवेश करण्यासाठी तुमची माहिती भरा",
+    operatorNameLabel: "ऑपरेटरचे नाव",
     departmentLabel: "विभाग",
+    areaLabel: "नियुक्त पुणे परिसर",
     accessCodeLabel: "प्रवेश कोड",
     show: "दाखवा",
     hide: "लपवा",
     continue: "कॉकपिटमध्ये जा",
+    selectArea: "तुमचा नियुक्त परिसर निवडा",
     errors: {
+      noOperatorName: "कृपया ऑपरेटरचे नाव टाका.",
+      operatorNameShort: "ऑपरेटरचे नाव किमान २ अक्षरे असावे.",
       noDepartment: "कृपया तुमचा विभाग निवडा.",
+      noArea: "कृपया नियुक्त पुणे परिसर निवडा.",
       noCode: "कृपया विभागाचा प्रवेश कोड टाका.",
       mismatch: "प्रवेश कोड निवडलेल्या विभागाशी जुळत नाही. कृपया पुन्हा तपासा.",
     },
   },
 }
 
+function isValidOperatorName(name) {
+  return name.trim().length >= 2
+}
+
 function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
+  const [operatorName, setOperatorName] = useState("")
   const [selectedDepartment, setSelectedDepartment] = useState("")
+  const [selectedArea, setSelectedArea] = useState("")
   const [accessCode, setAccessCode] = useState("")
   const [showCode, setShowCode] = useState(false)
+  const [operatorNameError, setOperatorNameError] = useState("")
   const [departmentError, setDepartmentError] = useState("")
+  const [areaError, setAreaError] = useState("")
   const [codeError, setCodeError] = useState("")
   const [mismatchError, setMismatchError] = useState("")
 
@@ -52,14 +72,29 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    setOperatorNameError("")
     setDepartmentError("")
+    setAreaError("")
     setCodeError("")
     setMismatchError("")
 
     let hasError = false
 
+    if (!operatorName.trim()) {
+      setOperatorNameError(t.errors.noOperatorName)
+      hasError = true
+    } else if (!isValidOperatorName(operatorName)) {
+      setOperatorNameError(t.errors.operatorNameShort)
+      hasError = true
+    }
+
     if (!selectedDepartment) {
       setDepartmentError(t.errors.noDepartment)
+      hasError = true
+    }
+
+    if (!selectedArea) {
+      setAreaError(t.errors.noArea)
       hasError = true
     }
 
@@ -76,12 +111,22 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
       return
     }
 
-    onLogin(selectedDepartment)
+    onLogin({
+      operatorName: operatorName.trim(),
+      departmentId: selectedDepartment,
+      areaId: selectedArea,
+    })
+  }
+
+  const inputStyle = {
+    height: "52px",
+    color: "#1B2A41",
+    border: "1px solid #D9D6CE",
+    backgroundColor: "#FFFFFF",
   }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10" style={{ backgroundColor: "#F2F1EC" }}>
-      {/* Language toggle — top right on larger screens, above card on small */}
       <div className="w-full max-w-md mb-4 flex justify-end">
         <div
           role="group"
@@ -108,7 +153,6 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
         </div>
       </div>
 
-      {/* Login card */}
       <div
         className="w-full max-w-md rounded-sm p-8"
         style={{ backgroundColor: "#FFFFFF", border: "1px solid #D9D6CE" }}
@@ -123,10 +167,34 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
           {t.instruction}
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-6" noValidate>
+        <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5" noValidate>
+          {/* Operator Name */}
+          <div>
+            <label htmlFor="operator-name" className="block text-base font-semibold mb-2" style={{ color: "#1B2A41" }}>
+              {t.operatorNameLabel}
+            </label>
+            <input
+              id="operator-name"
+              type="text"
+              value={operatorName}
+              onChange={(e) => {
+                setOperatorName(e.target.value)
+                setOperatorNameError("")
+              }}
+              autoComplete="name"
+              className="w-full px-4 rounded-sm text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1"
+              style={inputStyle}
+            />
+            {operatorNameError && (
+              <p className="mt-2 text-sm font-medium" style={{ color: "#B91C1C" }} role="alert">
+                {operatorNameError}
+              </p>
+            )}
+          </div>
+
           {/* Department selector */}
           <div>
-            <label className="block text-base font-semibold mb-3" style={{ color: "#1B2A41" }}>
+            <label className="block text-base font-semibold mb-2" style={{ color: "#1B2A41" }}>
               {t.departmentLabel}
             </label>
             <div className="flex flex-col gap-2" role="radiogroup" aria-label={t.departmentLabel}>
@@ -146,7 +214,7 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
                     }}
                     className="w-full text-left px-4 rounded-sm text-base font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1"
                     style={{
-                      minHeight: "52px",
+                      minHeight: "48px",
                       color: "#1B2A41",
                       backgroundColor: isSelected ? "#F2F1EC" : "#FFFFFF",
                       border: isSelected ? "2px solid #1E3A5F" : "1px solid #D9D6CE",
@@ -160,6 +228,35 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
             {departmentError && (
               <p className="mt-2 text-sm font-medium" style={{ color: "#B91C1C" }} role="alert">
                 {departmentError}
+              </p>
+            )}
+          </div>
+
+          {/* Assigned Pune Area */}
+          <div>
+            <label htmlFor="assigned-area" className="block text-base font-semibold mb-2" style={{ color: "#1B2A41" }}>
+              {t.areaLabel}
+            </label>
+            <select
+              id="assigned-area"
+              value={selectedArea}
+              onChange={(e) => {
+                setSelectedArea(e.target.value)
+                setAreaError("")
+              }}
+              className="w-full px-4 rounded-sm text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 appearance-none"
+              style={inputStyle}
+            >
+              <option value="">{t.selectArea}</option>
+              {PUNE_AREAS.map((area) => (
+                <option key={area.id} value={area.id}>
+                  {lang === "mr" ? area.nameMr : area.nameEn}
+                </option>
+              ))}
+            </select>
+            {areaError && (
+              <p className="mt-2 text-sm font-medium" style={{ color: "#B91C1C" }} role="alert">
+                {areaError}
               </p>
             )}
           </div>
@@ -181,12 +278,7 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
                 }}
                 autoComplete="off"
                 className="w-full px-4 pr-24 rounded-sm text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1"
-                style={{
-                  height: "52px",
-                  color: "#1B2A41",
-                  border: "1px solid #D9D6CE",
-                  backgroundColor: "#FFFFFF",
-                }}
+                style={inputStyle}
               />
               <button
                 type="button"
@@ -210,7 +302,6 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
             )}
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             className="w-full rounded-sm text-base font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"

@@ -250,8 +250,8 @@ function ActionPanel({ lang = "en", items = [], onSetStatus, isEditable = true }
                     </button>
                   </>
                 ) : (
-                  <span className="text-xs font-bold text-slate-400 bg-stone-100 border border-gray-200 px-3 py-1.5 rounded-sm uppercase tracking-wide">
-                    {lang === "mr" ? "केवळ वाचनासाठी" : "View Only"}
+                  <span className="text-xs font-bold text-slate-500 bg-stone-100 border border-gray-200 px-3 py-1.5 rounded-sm uppercase tracking-wide">
+                    {lang === "mr" ? "फक्त पहा" : "View Only"}
                   </span>
                 )}
               </div>
