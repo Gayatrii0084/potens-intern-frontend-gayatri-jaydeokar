@@ -126,7 +126,7 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10" style={{ backgroundColor: "#F2F1EC" }}>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-10 bg-cockpit-bg">
       <div className="w-full max-w-md mb-4 flex justify-end">
         <div
           role="group"
@@ -153,10 +153,7 @@ function LoginPage({ lang = "en", onLanguageChange, onLogin }) {
         </div>
       </div>
 
-      <div
-        className="w-full max-w-md rounded-sm p-8"
-        style={{ backgroundColor: "#FFFFFF", border: "1px solid #D9D6CE" }}
-      >
+      <div className="w-full max-w-md border border-cockpit-border bg-cockpit-surface p-6 sm:p-8">
         <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#1B2A41" }}>
           {t.title}
         </h1>
