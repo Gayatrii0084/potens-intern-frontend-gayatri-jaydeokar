@@ -95,7 +95,7 @@ React · Vite · JavaScript · JSX · Tailwind CSS · HTML5 · CSS · Git · Git
 ### Setup
 
 ```bash
-git clone https://github.com/Gayatrii0084/potens-intern-frontend-gayatri-jaydeokar
+git clone YOUR_REPOSITORY_URL
 cd potens-intern-frontend
 npm install
 npm run dev
@@ -108,6 +108,43 @@ Vite will print the local dev URL in the terminal — typically `http://localhos
 ```bash
 npm run build
 ```
+
+## Demo Login Credentials
+
+Since authentication isn't connected to a backend, login is validated against a local set of departments, areas, and access codes. Use the combinations below to test the app.
+
+**Departments and access codes**
+
+Each department has its own access code. The code is checked only against the selected department — the area you pick doesn't affect which code is required.
+
+- **Medical Operations** (`medical`) — access code `MED-204`
+- **Logistics Operations** (`logistics`) — access code `LOG-317`
+- **Mechanical Operations** (`mechanical`) — access code `MEC-428`
+- **Civil Services Operations** (`civil`) — access code `CIV-539`
+
+**Pune operational areas**
+
+All of the following areas are valid at login, and can be paired with any department:
+
+- Shivajinagar–Deccan (`shivajinagar-deccan`)
+- Kothrud–Karve Nagar (`kothrud-karve-nagar`)
+- Aundh–Baner (`aundh-baner`)
+- Hadapsar (`hadapsar`)
+- Kharadi–Viman Nagar (`kharadi-viman-nagar`)
+- Kondhwa–Wanowrie (`kondhwa-wanowrie`)
+
+**How it works**
+
+You can log in with any operator name, paired with any department, area, and the matching access code for that department. Edit permission is granted only for the exact department + area combination selected at login — logging in with the same department but a different area gives view-only access.
+
+**Example logins**
+
+- **Ninad Patil**, Civil Services Operations, Kothrud–Karve Nagar, code `CIV-539` → logs in with edit permission, scoped to Civil + Kothrud–Karve Nagar only.
+- **Ninad Patil**, Civil Services Operations, Hadapsar, code `CIV-539` → logs in, but view-only — same department, different area.
+- **Priya Sharma**, Medical Operations, Aundh–Baner, code `MED-204` → logs in with edit permission, scoped to Medical + Aundh–Baner.
+- **Amit Deshmukh**, Logistics Operations, Kharadi–Viman Nagar, code `LOG-317` → logs in with edit permission, scoped to Logistics + Kharadi–Viman Nagar.
+- **Ravi Kulkarni**, Mechanical Operations, Shivajinagar–Deccan, code `MEC-428` → logs in with edit permission, scoped to Mechanical + Shivajinagar–Deccan.
+- **Ninad Patil**, Civil Services Operations, Kothrud–Karve Nagar, code `LOG-317` → login fails, since the access code doesn't match the selected department.
 
 ## Design Decisions
 
