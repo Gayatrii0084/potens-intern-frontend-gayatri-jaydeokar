@@ -21,6 +21,7 @@ const TRANSLATIONS = {
     panelSubtitle: "Top 5 items requiring your decision this morning",
     pendingCountSuffix: "pending",
     shortcutHint: "Keyboard: J/K to select | A to approve | H to hold",
+    shortcutHintReadOnly: "Keyboard: J/K to select | Actions disabled",
     cols: {
       priority: "Priority",
       item: "Item",
@@ -41,34 +42,13 @@ const TRANSLATIONS = {
       approve: "Approve",
       hold: "Hold",
     },
-    items: {
-      1: {
-        title: "Vendor Invoice — Krishnarao Suppliers Pvt. Ltd.",
-        context: "₹2.4L invoice pending for 6 days; payment due date is today as per contract.",
-      },
-      2: {
-        title: "Field Officer Deployment — Nashik District Block C",
-        context: "3 officers remain unassigned for this week's rural survey cycle starting 10:00 AM.",
-      },
-      3: {
-        title: "Daily Operations Report — 6 July 2026",
-        context: "Report compiled and awaiting supervisor sign-off; submission deadline is 11:00 AM.",
-      },
-      4: {
-        title: "Equipment Maintenance Clearance — Warehouse B Forklift",
-        context: "Scheduled service overdue by 12 days; safety inspection mandatory before next use.",
-      },
-      5: {
-        title: "Budget Reallocation Request — Q3 Training Fund",
-        context: "Department head has requested ₹80K transfer from travel budget to digital tools.",
-      },
-    },
   },
   mr: {
     panelTitle: "आज करावयाची कामे",
     panelSubtitle: "सकाळच्या वेळेत निर्णय घेणे आवश्यक असणाऱ्या ५ महत्त्वाच्या बाबी",
     pendingCountSuffix: "प्रलंबित",
     shortcutHint: "कीबोर्ड: J/K निवडण्यासाठी | A मंजुरीसाठी | H थांबवण्यासाठी",
+    shortcutHintReadOnly: "कीबोर्ड: J/K निवडण्यासाठी | कृती अक्षम आहेत",
     cols: {
       priority: "प्राधान्य",
       item: "काम",
@@ -89,51 +69,12 @@ const TRANSLATIONS = {
       approve: "मंजूर करा",
       hold: "थांबवा",
     },
-    items: {
-      1: {
-        title: "विक्रेता पेमेंट — कृष्णराव सप्लायर्स प्रा. लि.",
-        context: "₹२.४ लाखांचे बिल ६ दिवसांपासून प्रलंबित; कराराप्रमाणे आज पेमेंटची अंतिम तारीख आहे.",
-      },
-      2: {
-        title: "फील्ड अधिकारी नियुक्ती — नाशिक जिल्हा ब्लॉक सी",
-        context: "या आठवड्याच्या ग्रामीण सर्वेक्षणासाठी ३ अधिकाऱ्यांची नियुक्ती बाकी आहे; काम सकाळी १०:०० वाजता सुरू होईल.",
-      },
-      3: {
-        title: "दैनिक कामकाज अहवाल — ६ जुलै २०२६",
-        context: "अहवाल तयार आहे आणि पर्यवेक्षकांच्या मंजुरीची प्रतीक्षा आहे; सादर करण्याची अंतिम वेळ सकाळी ११:०० वाजेपर्यंत आहे.",
-      },
-      4: {
-        title: "उपकरण देखभाल मंजुरी — वेअरहाऊस बी फोर्कलिफ्ट",
-        context: "नियोजित सर्व्हिसिंग १२ दिवस थकीत आहे; पुढील वापरापूर्वी सुरक्षा तपासणी करणे अनिवार्य आहे.",
-      },
-      5: {
-        title: "बजेट निधी वर्ग करण्याची विनंती — तिसऱ्या तिमाहीचे प्रशिक्षण",
-        context: "विभाग प्रमुखांनी प्रवास बजेटमधून नवीन साधनांसाठी ₹८०,००० वर्ग करण्याची विनंती केली आहे.",
-      },
-    },
   },
 }
 
-const INITIAL_ITEMS = [
-  { id: 1, priority: "HIGH" },
-  { id: 2, priority: "HIGH" },
-  { id: 3, priority: "MEDIUM" },
-  { id: 4, priority: "MEDIUM" },
-  { id: 5, priority: "LOW" },
-]
-
 // ── Component ────────────────────────────────────────────────────────────────
-function ActionPanel({ lang = "en" }) {
-  const [items, setItems] = useState(
-    INITIAL_ITEMS.map((item) => ({ ...item, status: "pending" }))
-  )
+function ActionPanel({ lang = "en", items = [], onSetStatus, isEditable = true }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
-
-  function setStatus(id, newStatus) {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, status: newStatus } : item))
-    )
-  }
 
   // Keyboard shortcut listener
   useEffect(() => {
@@ -155,24 +96,24 @@ function ActionPanel({ lang = "en" }) {
       } else if (key === "k") {
         event.preventDefault()
         setSelectedIndex((prev) => (prev - 1 + items.length) % items.length)
-      } else if (key === "a") {
+      } else if (key === "a" && isEditable) {
         event.preventDefault()
         const selectedItem = items[selectedIndex]
         if (selectedItem && selectedItem.status === "pending") {
-          setStatus(selectedItem.id, "approved")
+          onSetStatus && onSetStatus(selectedItem.id, "approved")
         }
-      } else if (key === "h") {
+      } else if (key === "h" && isEditable) {
         event.preventDefault()
         const selectedItem = items[selectedIndex]
         if (selectedItem && selectedItem.status === "pending") {
-          setStatus(selectedItem.id, "hold")
+          onSetStatus && onSetStatus(selectedItem.id, "hold")
         }
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [items, selectedIndex])
+  }, [items, selectedIndex, isEditable, onSetStatus])
 
   const pendingCount = items.filter((i) => i.status === "pending").length
   const t = TRANSLATIONS[lang] ?? TRANSLATIONS.en
@@ -195,13 +136,12 @@ function ActionPanel({ lang = "en" }) {
             {pendingCount} / {items.length} {t.pendingCountSuffix}
           </span>
           <span className="text-[11px] font-medium text-slate-500 bg-stone-100 px-2 py-0.5 border border-gray-200 rounded-sm">
-            {t.shortcutHint}
+            {isEditable ? t.shortcutHint : t.shortcutHintReadOnly}
           </span>
         </div>
       </div>
 
       {/* ── Column headings ── */}
-      {/* 200px action column ensures enough room for Marathi button texts without wrapping */}
       <div className="hidden md:grid grid-cols-[56px_1fr_108px_200px] gap-x-4 px-5 py-2 border-b border-gray-200 bg-stone-50">
         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">{t.cols.priority}</span>
         <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">{t.cols.item}</span>
@@ -215,7 +155,8 @@ function ActionPanel({ lang = "en" }) {
           const isActioned = item.status !== "pending"
           const priStyle = PRIORITY_STYLE[item.priority]
           const statusStyle = STATUS_STYLE[item.status]
-          const itemText = t.items[item.id]
+          const itemTitle = lang === "mr" ? item.titleMr : item.titleEn
+          const itemContext = lang === "mr" ? item.contextMr : item.contextEn
 
           return (
             <li
@@ -255,10 +196,10 @@ function ActionPanel({ lang = "en" }) {
                     isActioned ? "text-slate-400" : "text-slate-800"
                   }`}
                 >
-                  {itemText.title}
+                  {itemTitle}
                 </p>
                 <p className="mt-1 text-sm text-slate-600 leading-snug">
-                  {itemText.context}
+                  {itemContext}
                 </p>
               </div>
 
@@ -271,40 +212,48 @@ function ActionPanel({ lang = "en" }) {
                 </span>
               </div>
 
-              {/* Action buttons */}
+              {/* Actions or view-only placeholder */}
               <div className="flex items-center lg:justify-end gap-2">
-                <button
-                  type="button"
-                  disabled={isActioned}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setStatus(item.id, "approved")
-                  }}
-                  className={[
-                    "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-green-700",
-                    isActioned
-                      ? "border-gray-200 text-gray-300 bg-white cursor-not-allowed"
-                      : "border-green-700 text-green-700 bg-white hover:bg-green-700 hover:text-white",
-                  ].join(" ")}
-                >
-                  {t.buttons.approve}
-                </button>
-                <button
-                  type="button"
-                  disabled={isActioned}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setStatus(item.id, "hold")
-                  }}
-                  className={[
-                    "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-amber-500",
-                    isActioned
-                      ? "border-gray-200 text-gray-300 bg-white cursor-not-allowed"
-                      : "border-amber-500 text-amber-700 bg-white hover:bg-amber-500 hover:text-white",
-                  ].join(" ")}
-                >
-                  {t.buttons.hold}
-                </button>
+                {isEditable ? (
+                  <>
+                    <button
+                      type="button"
+                      disabled={isActioned}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onSetStatus && onSetStatus(item.id, "approved")
+                      }}
+                      className={[
+                        "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-green-700",
+                        isActioned
+                          ? "border-gray-200 text-gray-300 bg-white cursor-not-allowed"
+                          : "border-green-700 text-green-700 bg-white hover:bg-green-700 hover:text-white",
+                      ].join(" ")}
+                    >
+                      {t.buttons.approve}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isActioned}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onSetStatus && onSetStatus(item.id, "hold")
+                      }}
+                      className={[
+                        "px-3.5 py-1.5 text-xs font-semibold border leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-amber-500",
+                        isActioned
+                          ? "border-gray-200 text-gray-300 bg-white cursor-not-allowed"
+                          : "border-amber-500 text-amber-700 bg-white hover:bg-amber-500 hover:text-white",
+                      ].join(" ")}
+                    >
+                      {t.buttons.hold}
+                    </button>
+                  </>
+                ) : (
+                  <span className="text-xs font-bold text-slate-400 bg-stone-100 border border-gray-200 px-3 py-1.5 rounded-sm uppercase tracking-wide">
+                    {lang === "mr" ? "केवळ वाचनासाठी" : "View Only"}
+                  </span>
+                )}
               </div>
             </li>
           )

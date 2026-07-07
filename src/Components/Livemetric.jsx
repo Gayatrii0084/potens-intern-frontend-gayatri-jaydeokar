@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { DEPARTMENTS } from "../mockData"
 
 // ── Deadline: 11:00 AM today ─────────────────────────────────────────────────
 function getDeadlineMs() {
@@ -17,10 +18,9 @@ function pad(n) {
   return String(n).padStart(2, "0")
 }
 
-// ── UI strings — English and Marathi ────────────────────────────────────────
+// ── UI strings — English and Marathi (Standard elements) ─────────────────────
 const STRINGS = {
   en: {
-    heading:  "NEXT REVIEW DEADLINE",
     live:     "LIVE",
     hr:       "HR",
     min:      "MIN",
@@ -34,7 +34,6 @@ const STRINGS = {
     },
   },
   mr: {
-    heading:  "पुढील आढावा मुदत",
     live:     "थेट",
     hr:       "तास",
     min:      "मिनिट",
@@ -63,13 +62,7 @@ const URGENCY_COLOR = {
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
-/**
- * LiveMetric — deadline countdown to the 11:00 AM review window.
- *
- * Props:
- *   lang: "en" | "mr"  — driven by the Header language toggle via App.
- */
-function LiveMetric({ lang = "en" }) {
+function LiveMetric({ lang = "en", activeDepartment = "medical" }) {
   const [remaining, setRemaining] = useState(getRemainingSeconds)
 
   useEffect(() => {
@@ -88,8 +81,11 @@ function LiveMetric({ lang = "en" }) {
   const seconds    = remaining % 60
   const urgencyKey = getUrgencyKey(remaining)
 
-  // Fall back to English if an unknown lang is passed
   const t = STRINGS[lang] ?? STRINGS.en
+  
+  // Resolve department-specific countdown heading from mockData
+  const activeDept = DEPARTMENTS.find((d) => d.id === activeDepartment) || DEPARTMENTS[0]
+  const headingText = lang === "mr" ? activeDept.countdown.headingMr : activeDept.countdown.headingEn
 
   return (
     <section className="border border-gray-300 bg-slate-900 text-white p-5 min-h-[200px] flex flex-col justify-between">
@@ -97,7 +93,7 @@ function LiveMetric({ lang = "en" }) {
       {/* ── Row 1: heading + live badge ── */}
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm font-bold uppercase tracking-widest text-slate-400">
-          {t.heading}
+          {headingText}
         </p>
 
         {/* Pulsing live dot — uses Tailwind's built-in animate-ping, no extra library */}

@@ -3,110 +3,162 @@ import Header from "./Components/Header"
 import ActionPanel from "./Components/ActionPanel"
 import AnomalyPanel from "./Components/Anomalypanel"
 import LiveMetric from "./Components/Livemetric"
-
-// ── Escalation contacts translations dictionary ──────────────────────────────
-const ESCALATION_STRINGS = {
-  en: {
-    sectionTitle: "Escalation Contacts",
-    disclaimer: "Internal support pathways for immediate approval and system exceptions.",
-    status: {
-      available: "Available",
-      onCall: "On Call",
-    },
-    contacts: [
-      {
-        role: "Operations Lead",
-        desc: "For urgent approvals",
-        ext: "Ext. 201",
-        statusType: "available",
-      },
-      {
-        role: "IT Support",
-        desc: "System and access issues",
-        ext: "Ext. 114",
-        statusType: "available",
-      },
-      {
-        role: "Compliance Desk",
-        desc: "Policy exceptions",
-        ext: "Ext. 305",
-        statusType: "onCall",
-      },
-    ]
-  },
-  mr: {
-    sectionTitle: "तातडीच्या मदतीसाठी संपर्क",
-    disclaimer: "त्वरित मंजुरी आणि प्रणाली अपवादांसाठी अंतर्गत सहाय्य मार्ग.",
-    status: {
-      available: "उपलब्ध",
-      onCall: "कॉलवर",
-    },
-    contacts: [
-      {
-        role: "कामकाज प्रमुख (Operations Lead)",
-        desc: "तातडीच्या मंजुरीसाठी",
-        ext: "विस्तारित क्र. २०१",
-        statusType: "available",
-      },
-      {
-        role: "आयटी सपोर्ट (IT Support)",
-        desc: "सिस्टम आणि ॲक्सेस समस्या",
-        ext: "विस्तारित क्र. ११४",
-        statusType: "available",
-      },
-      {
-        role: "नियमन आणि पालन (Compliance Desk)",
-        desc: "धोरण अपवाद",
-        ext: "विस्तारित क्र. ३०५",
-        statusType: "onCall",
-      },
-    ]
-  }
-}
+import { DEPARTMENTS } from "./mockData"
 
 function App() {
-  // Language state lives here so it can be passed to any component that needs it.
-  // Header fires onLanguageChange; all panels read the lang prop.
   const [lang, setLang] = useState("en")
-  const e = ESCALATION_STRINGS[lang] ?? ESCALATION_STRINGS.en
+  const [activeDepartment, setActiveDepartment] = useState("medical")
+  const userDepartment = "medical"
+
+  // Lift action items state to App.jsx to preserve status across department switches
+  const [departmentItems, setDepartmentItems] = useState(() => {
+    const initial = {}
+    DEPARTMENTS.forEach(dept => {
+      initial[dept.id] = dept.items.map(item => ({ ...item, status: "pending" }))
+    })
+    return initial
+  })
+
+  const activeDeptData = DEPARTMENTS.find(d => d.id === activeDepartment)
+  const currentItems = departmentItems[activeDepartment]
+  const isEditable = activeDepartment === userDepartment
+
+  const handleSetStatus = (itemId, newStatus) => {
+    setDepartmentItems(prev => ({
+      ...prev,
+      [activeDepartment]: prev[activeDepartment].map(item =>
+        item.id === itemId ? { ...item, status: newStatus } : item
+      )
+    }))
+  }
+
+  // Escalation contacts mapping
+  const contactsSectionTitle = lang === "mr" ? "तातडीच्या मदतीसाठी संपर्क" : "Escalation Contacts"
+  const contactsDisclaimer = lang === "mr"
+    ? "त्वरित मंजुरी आणि प्रणाली अपवादांसाठी अंतर्गत सहाय्य मार्ग."
+    : "Internal support pathways for immediate approval and system exceptions."
+
+  const statusLabels = {
+    en: { available: "Available", onCall: "On Call" },
+    mr: { available: "उपलब्ध", onCall: "कॉलवर" }
+  }[lang]
+
+  const mappedContacts = activeDeptData.contacts.map(c => ({
+    role: lang === "mr" ? c.roleMr : c.roleEn,
+    desc: lang === "mr" ? c.descMr : c.descEn,
+    ext: lang === "mr" ? c.ext.replace("Ext.", "विस्तारित क्र.") : c.ext,
+    statusType: c.statusType
+  }))
 
   return (
     <div className="bg-transparent pb-10">
       <Header lang={lang} onLanguageChange={setLang} />
 
       {/* Dashboard container — centered, max-width capped for desktop readability */}
-      {/* consistent 20px (px-5) page padding and 32px (py-8) top/bottom margins */}
       <main className="mx-auto w-[94%] max-w-[1600px] px-5 py-8 flex flex-col gap-6">
+
+        {/* ── Department Selector ── */}
+        <nav aria-label="Department switcher" className="border border-gray-300 bg-white p-2 rounded-sm shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest px-2 border-r border-gray-200 hidden md:inline">
+              {lang === "mr" ? "विभाग" : "DEPARTMENTS"}
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {DEPARTMENTS.map((dept) => {
+                const isSelected = activeDepartment === dept.id
+                const isOwn = dept.id === userDepartment
+                const deptLabel = lang === "mr" ? dept.nameMr : dept.nameEn
+                const badgeText = isOwn 
+                  ? (lang === "mr" ? "माझा विभाग" : "My Dept")
+                  : (lang === "mr" ? "फक्त पहा" : "View Only")
+                
+                return (
+                  <button
+                    key={dept.id}
+                    onClick={() => setActiveDepartment(dept.id)}
+                    className={`px-3.5 py-1.5 text-xs font-bold transition-all border rounded-sm flex items-center gap-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-slate-700 ${
+                      isSelected
+                        ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                        : "bg-white text-slate-600 border-gray-300 hover:bg-stone-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <span>{deptLabel}</span>
+                    <span className={`text-[9px] uppercase font-extrabold px-1.5 py-0.2 rounded-sm tracking-wider ${
+                      isSelected
+                        ? (isOwn ? "bg-green-700 text-green-100" : "bg-slate-800 text-slate-300")
+                        : (isOwn ? "bg-green-50 text-green-700 border border-green-200" : "bg-stone-100 text-slate-500 border border-gray-200")
+                    }`}>
+                      {badgeText}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Calm permission note for read-only departments */}
+          {!isEditable && (
+            <div className="text-xs font-medium text-slate-500 bg-stone-50 border border-gray-200 px-3 py-1.5 rounded-sm max-w-lg leading-snug">
+              {lang === "mr"
+                ? "तुम्ही हा विभाग फक्त पाहू शकता. कृती या विभागाच्या नियुक्त ऑपरेशन्स टीमद्वारे व्यवस्थापित केल्या जातात."
+                : "You can view this department. Actions are managed by its assigned operations team."}
+            </div>
+          )}
+        </nav>
+
+        {/* ── Department Title area ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-300 pb-4">
+          <div>
+            <h2 className="text-xl font-extrabold text-[#1B2A41] flex items-center gap-2">
+              {lang === "mr" ? activeDeptData.titleMr : activeDeptData.titleEn}
+              {isEditable ? (
+                <span className="text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                  {lang === "mr" ? "संपादकीय प्रवेश" : "Editable"}
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-300 px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                  {lang === "mr" ? "फक्त वाचनासाठी" : "Read-Only"}
+                </span>
+              )}
+            </h2>
+            <p className="mt-1 text-sm text-[#5C6470]">
+              {lang === "mr" ? activeDeptData.subtitleMr : activeDeptData.subtitleEn}
+            </p>
+          </div>
+        </div>
 
         {/*
           Two-column grid:
             left  — ActionPanel + EscalationContacts (70% width on desktop)
             right — LiveMetric + AnomalyPanel stacked in sidebar (30% width)
-          On tablet/mobile (<lg) the columns stack naturally.
-          Uses 24px (gap-6) spacing between major sections.
         */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[70%_minmax(0,1fr)]">
 
           {/* Left Column: Action Items + Escalation Contacts */}
           <div className="flex flex-col gap-6">
-            <ActionPanel lang={lang} />
+            <ActionPanel
+              lang={lang}
+              items={currentItems}
+              onSetStatus={handleSetStatus}
+              isEditable={isEditable}
+            />
 
             {/* Escalation Contacts Panel */}
             <section className="border border-gray-300 bg-white">
-              {/* Header & Subtitle (20px / p-5 internal card padding for balance) */}
+              {/* Header & Subtitle */}
               <div className="border-b border-gray-300 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                 <h3 className="font-bold text-[#1B2A41] text-sm tracking-wider uppercase">
-                  {e.sectionTitle}
+                  {contactsSectionTitle}
                 </h3>
                 <p className="text-xs font-medium text-[#5C6470]">
-                  {e.disclaimer}
+                  {contactsDisclaimer}
                 </p>
               </div>
 
-              {/* Contacts Row: 3 equal horizontal columns on desktop with p-5 padding */}
+              {/* Contacts Row: 3 equal horizontal columns on desktop */}
               <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#D9D6CE]">
-                {e.contacts.map((contact, idx) => {
-                  const isAvailable = contact.statusType === "available";
+                {mappedContacts.map((contact, idx) => {
+                  const isAvailable = contact.statusType === "available"
                   return (
                     <div key={idx} className="p-5 flex items-center justify-between gap-4">
                       <div className="min-w-0">
@@ -128,11 +180,11 @@ function App() {
                             : "bg-blue-50 text-blue-700 border border-blue-200"
                         }`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${isAvailable ? "bg-green-500" : "bg-blue-500"}`} />
-                          {isAvailable ? e.status.available : e.status.onCall}
+                          {isAvailable ? statusLabels.available : statusLabels.onCall}
                         </span>
                       </div>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </section>
@@ -140,8 +192,8 @@ function App() {
 
           {/* Right Column: live metric, anomaly list stacked in sidebar */}
           <div className="flex flex-col gap-6">
-            <LiveMetric lang={lang} />
-            <AnomalyPanel lang={lang} />
+            <LiveMetric lang={lang} activeDepartment={activeDepartment} />
+            <AnomalyPanel lang={lang} anomalies={activeDeptData.anomalies} />
           </div>
 
         </div>
